@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qinguangfeng.mapper.MessageboardMapper">
+
+    <select id="searchMsgById" parameterType="java.util.Map" resultType="com.qinguangfeng.vo.MessageboardVo">
+
+        SELECT m.boardId,m.messageContext,m.careatTime,su.userId,su.userName AS sendUsername FROM messageboard m JOIN
+        userinfo su ON m.senduserId=su.userId WHERE m.isdelete=1
+        <if test="map.boardId!=null">
+
+            AND m.boardId=#{map.boardId}
+
+        </if>
+        <if test="map.receiveuserId!=null">
+            AND m.receiveuserId=#{map.receiveuserId}
+
+        </if>
+        <!--/*LIMIT #{startrow},3*/-->
+        ORDER BY m.careatTime DESC
+        <if test="startrow!=null">
+            LIMIT #{startrow},3
+
+        </if>
+
+
+    </select>
+    <select id="getTotalCount" resultType="java.lang.Integer">
+
+        SELECT COUNT(0) FROM messageboard WHERE isdelete=1
+        <if test="receiveuserId!=null">
+            AND receiveuserId=#{receiveuserId}
+
+        </if>
+    </select>
+
+
+    <update id="deleteMsg" parameterType="com.qinguangfeng.entity.Messageboard">
+
+        UPDATE Messageboard set isdelete=0 WHERE boardId=#{boardId}
+
+
+    </update>
+
+
+    <insert id="insertMsg" parameterType="com.qinguangfeng.entity.Messageboard">
+
+        INSERT into Messageboard(boardId,senduserId,receiveuserId,messageContext,careatTime,isdelete)VALUE(#{boardId},#{senduserId},#{receiveuserId},#{messageContext},SYSDATE(),1)
+
+    </insert>
+
+</mapper>
